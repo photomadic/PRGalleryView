@@ -18,6 +18,8 @@ class PRGalleryView: UIView {
     let videoController: AVPlayerViewController = AVPlayerViewController()
 
     var galleryType: String = ""
+    var shouldAllowPlayback: Bool = true
+    var thumbnailInSeconds: Float64 = 5
 
     ///
     /// Load any supported media into the gallery view.
@@ -35,9 +37,19 @@ class PRGalleryView: UIView {
         videoController.view.removeFromSuperview()
 
         if (galleryType == "video") {
-            videoController.player = AVPlayer(URL: url)
-            videoController.view.frame = self.bounds
-            self.addSubview(videoController.view)
+            
+            if (shouldAllowPlayback) {
+                videoController.player = AVPlayer(URL: url)
+                videoController.view.frame = self.bounds
+                self.addSubview(videoController.view)
+                return
+            }
+            
+            imageView.frame = self.bounds
+            imageView.autoresizingMask = [.FlexibleHeight, .FlexibleWidth]
+            self.addSubview(imageView)
+            imageView.image = self.imageThumbnailFromVideo(url)
+            
             return
         }
 
@@ -109,6 +121,22 @@ class PRGalleryView: UIView {
         }
 
         return image!
+    }
+    
+    func imageThumbnailFromVideo(url: NSURL) -> UIImage {
+        let video = AVURLAsset(URL: url)
+        let time = CMTimeMakeWithSeconds(thumbnailInSeconds, 60)
+        let thumbGenerator = AVAssetImageGenerator(asset: video)
+        thumbGenerator.appliesPreferredTrackTransform = true
+        
+        do {
+            let thumbnail = try thumbGenerator.copyCGImageAtTime(time, actualTime: nil)
+            return UIImage(CGImage: thumbnail)
+            
+        } catch {
+            print("Unable to generate thumbnail from video", url.path)
+            return UIImage()
+        }
     }
 
 }
