@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="9046" systemVersion="15B17c" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="BYZ-38-t0r">
+    <dependencies>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="9035"/>
+        <capability name="Aspect ratio constraints" minToolsVersion="5.1"/>
+        <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
+    </dependencies>
+    <scenes>
+        <!--View Controller-->
+        <scene sceneID="tne-QT-ifu">
+            <objects>
+                <viewController id="BYZ-38-t0r" customClass="ViewController" customModule="PRGalleryView" customModuleProvider="target" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="y3c-jy-aDJ"/>
+                        <viewControllerLayoutGuide type="bottom" id="wfy-db-euE"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="8bC-Xf-vdC">
+                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="0pK-eH-ifC" customClass="PRGalleryView" customModule="PRGalleryView" customModuleProvider="target">
+                                <rect key="frame" x="20" y="142" width="560" height="315"/>
+                                <animations/>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" secondItem="0pK-eH-ifC" secondAttribute="height" multiplier="16:9" id="Fgn-o6-J65"/>
+                                </constraints>
+                            </view>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="HlS-g9-MAO">
+                                <rect key="frame" x="254" y="465" width="93" height="30"/>
+                                <animations/>
+                                <state key="normal" title="Animated GIF"/>
+                                <connections>
+                                    <action selector="loadGif" destination="BYZ-38-t0r" eventType="touchUpInside" id="VMt-yg-7Po"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Kre-IZ-qVF">
+                                <rect key="frame" x="372" y="465" width="40" height="30"/>
+                                <animations/>
+                                <state key="normal" title="Video"/>
+                                <connections>
+                                    <action selector="loadVideo" destination="BYZ-38-t0r" eventType="touchUpInside" id="DKo-UC-hiQ"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="7uy-Rf-IXO">
+                                <rect key="frame" x="188" y="465" width="41" height="30"/>
+                                <animations/>
+                                <state key="normal" title="Photo"/>
+                                <connections>
+                                    <action selector="loadImage" destination="BYZ-38-t0r" eventType="touchUpInside" id="XNU-CX-gc9"/>
+                                </connections>
+                            </button>
+                        </subviews>
+                        <animations/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstItem="HlS-g9-MAO" firstAttribute="leading" secondItem="7uy-Rf-IXO" secondAttribute="trailing" constant="25" id="7Oi-m6-nRS"/>
+                            <constraint firstItem="HlS-g9-MAO" firstAttribute="top" secondItem="0pK-eH-ifC" secondAttribute="bottom" constant="8" id="A7X-em-TrW"/>
+                            <constraint firstItem="0pK-eH-ifC" firstAttribute="centerY" secondItem="8bC-Xf-vdC" secondAttribute="centerY" id="RiH-Z8-H9T"/>
+                            <constraint firstItem="HlS-g9-MAO" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="Spi-xu-7fK"/>
+                            <constraint firstItem="0pK-eH-ifC" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="aXB-am-ug5"/>
+                            <constraint firstItem="Kre-IZ-qVF" firstAttribute="top" secondItem="0pK-eH-ifC" secondAttribute="bottom" constant="8" id="bW2-sS-f0o"/>
+                            <constraint firstItem="Kre-IZ-qVF" firstAttribute="leading" secondItem="HlS-g9-MAO" secondAttribute="trailing" constant="25" id="hIj-h1-yqz"/>
+                            <constraint firstItem="7uy-Rf-IXO" firstAttribute="top" secondItem="0pK-eH-ifC" secondAttribute="bottom" constant="8" id="kvt-kK-dyM"/>
+                            <constraint firstItem="0pK-eH-ifC" firstAttribute="trailing" secondItem="8bC-Xf-vdC" secondAttribute="trailingMargin" id="tft-Uz-Fv1"/>
+                            <constraint firstItem="0pK-eH-ifC" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leadingMargin" id="zmY-1z-Sl4"/>
+                        </constraints>
+                    </view>
+                    <connections>
+                        <outlet property="galleryView" destination="0pK-eH-ifC" id="6Sh-Pc-Twb"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="305" y="429"/>
+        </scene>
+    </scenes>
+</document>
