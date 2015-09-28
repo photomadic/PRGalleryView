@@ -41,6 +41,16 @@ class PRGalleryView: UIView {
         }
     }
 
+    var player: AVPlayer? {
+        set {
+            videoController.player = newValue
+            cleanup("video")
+        }
+        get {
+            return videoController.player
+        }
+    }
+
     func cleanup(type: String) {
         if (type == "video") {
             videoController.view.frame = bounds
