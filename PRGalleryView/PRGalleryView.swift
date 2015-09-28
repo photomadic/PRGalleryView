@@ -51,9 +51,15 @@ class PRGalleryView: UIView {
         }
     }
 
+    ///
+    /// Helper function to clean up the view stack after new media is loaded.
+    ///
+    /// - parameter type: The type of loaded media; non-necessary views will be removed.
+    ///
     func cleanup(type: String) {
         if (type == "video") {
             videoController.view.frame = bounds
+            imageView.removeFromSuperview()
             addSubview(videoController.view)
             return
         }
@@ -76,29 +82,24 @@ class PRGalleryView: UIView {
             return
         }
 
-        // Reset any previous view heirarchy if this is a recycled view.
-        galleryType = self.typeForPath(url.path!)
-        imageView.removeFromSuperview()
-        videoController.view.removeFromSuperview()
+        switch self.typeForPath(url.path!) {
 
-        if (galleryType == "video") {
-
+        case "video":
             if (shouldAllowPlayback) {
-                videoController.player = AVPlayer(URL: url)
-                videoController.view.frame = self.bounds
-                self.addSubview(videoController.view)
+                player = AVPlayer(URL: url)
                 return
             }
 
             image = self.imageThumbnailFromVideo(url)
-            return
-        }
+            break
 
-        if (galleryType == "gif") {
+        case "gif":
             animatedImage = self.animatedImageFromPath(url.path!)
-        }
-        else {
+            break
+
+        default:
             image = self.imageFromPath(url.path!)
+
         }
     }
 
