@@ -21,6 +21,41 @@ class PRGalleryView: UIView {
     var shouldAllowPlayback: Bool = true
     var thumbnailInSeconds: Float64 = 5
 
+    var image: UIImage? {
+        set {
+            imageView.image = newValue
+            cleanup("image")
+        }
+        get {
+            return imageView.image
+        }
+    }
+
+    var animatedImage: FLAnimatedImage? {
+        set {
+            imageView.animatedImage = newValue
+            cleanup("image")
+        }
+        get {
+            return imageView.animatedImage
+        }
+    }
+
+    func cleanup(type: String) {
+        if (type == "video") {
+            videoController.view.frame = bounds
+            addSubview(videoController.view)
+            return
+        }
+
+        imageView.frame = bounds
+        imageView.autoresizingMask = [.FlexibleHeight, .FlexibleWidth]
+
+        videoController.view.removeFromSuperview()
+        videoController.player = AVPlayer()
+        addSubview(imageView)
+    }
+
     ///
     /// Load any supported media into the gallery view.
     ///
@@ -37,33 +72,23 @@ class PRGalleryView: UIView {
         videoController.view.removeFromSuperview()
 
         if (galleryType == "video") {
-            
+
             if (shouldAllowPlayback) {
                 videoController.player = AVPlayer(URL: url)
                 videoController.view.frame = self.bounds
                 self.addSubview(videoController.view)
                 return
             }
-            
-            imageView.frame = self.bounds
-            imageView.autoresizingMask = [.FlexibleHeight, .FlexibleWidth]
-            self.addSubview(imageView)
-            imageView.image = self.imageThumbnailFromVideo(url)
-            
+
+            image = self.imageThumbnailFromVideo(url)
             return
         }
 
-        videoController.player = AVPlayer()
-
-        imageView.frame = self.bounds
-        imageView.autoresizingMask = [.FlexibleHeight, .FlexibleWidth]
-        self.addSubview(imageView)
-
         if (galleryType == "gif") {
-            imageView.animatedImage = self.animatedImageFromPath(url.path!)
+            animatedImage = self.animatedImageFromPath(url.path!)
         }
         else {
-            imageView.image = self.imageFromPath(url.path!)
+            image = self.imageFromPath(url.path!)
         }
     }
 
@@ -122,17 +147,16 @@ class PRGalleryView: UIView {
 
         return image!
     }
-    
+
     func imageThumbnailFromVideo(url: NSURL) -> UIImage {
         let video = AVURLAsset(URL: url)
         let time = CMTimeMakeWithSeconds(thumbnailInSeconds, 60)
         let thumbGenerator = AVAssetImageGenerator(asset: video)
         thumbGenerator.appliesPreferredTrackTransform = true
-        
+
         do {
             let thumbnail = try thumbGenerator.copyCGImageAtTime(time, actualTime: nil)
             return UIImage(CGImage: thumbnail)
-            
         } catch {
             print("Unable to generate thumbnail from video", url.path)
             return UIImage()
