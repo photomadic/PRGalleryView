@@ -8,3 +8,5 @@
 
 #import "FLAnimatedImage.h"
 #import "FLAnimatedImageView.h"
+
+#import "RSPlayPauseButton.h"
