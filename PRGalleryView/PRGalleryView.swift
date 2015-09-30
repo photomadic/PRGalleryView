@@ -17,6 +17,7 @@ class PRGalleryView: UIView {
     let imageView: FLAnimatedImageView = FLAnimatedImageView()
     let videoController: AVPlayerViewController = AVPlayerViewController()
 
+    var media: NSURL = NSURL()
     var galleryType: String = ""
     var shouldAllowPlayback: Bool = true
     var thumbnailInSeconds: Float64 = 5
@@ -82,23 +83,32 @@ class PRGalleryView: UIView {
             return
         }
 
-        switch self.typeForPath(url.path!) {
+        media = url
+
+        galleryType = typeForPath(media.path!)
+
+        switch galleryType {
 
         case "video":
             if (shouldAllowPlayback) {
-                player = AVPlayer(URL: url)
+                player = AVPlayer(URL: media)
                 return
             }
 
-            image = self.imageThumbnailFromVideo(url)
+            image = self.imageThumbnailFromVideo(media)
             break
 
         case "gif":
-            animatedImage = self.animatedImageFromPath(url.path!)
+            if (shouldAllowPlayback) {
+                animatedImage = self.animatedImageFromPath(media.path!)
+                return
+            }
+
+            image = self.imageFromPath(media.path!)
             break
 
         default:
-            image = self.imageFromPath(url.path!)
+            image = self.imageFromPath(media.path!)
 
         }
     }
@@ -140,6 +150,27 @@ class PRGalleryView: UIView {
         }
 
         return image!
+    }
+
+    func startAnimating() {
+        if (galleryType != "gif") {
+            return
+        }
+
+        if (imageView.animatedImage == nil) {
+            animatedImage = self.animatedImageFromPath(media.path!)
+            image = nil
+        }
+
+        imageView.startAnimating()
+    }
+
+    func stopAnimating() {
+        if (galleryType != "gif") {
+            return
+        }
+
+        imageView.stopAnimating()
     }
 
     ///
