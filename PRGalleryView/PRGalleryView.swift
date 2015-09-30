@@ -17,10 +17,47 @@ class PRGalleryView: UIView {
     let imageView: FLAnimatedImageView = FLAnimatedImageView()
     let videoController: AVPlayerViewController = AVPlayerViewController()
 
-    var media: NSURL = NSURL()
     var galleryType: String = ""
     var shouldAllowPlayback: Bool = true
     var thumbnailInSeconds: Float64 = 5
+
+    ///
+    /// Load any supported media into the gallery view by URL.
+    ///
+    var media: NSURL! {
+        didSet {
+            if (self.media == nil || self.media.path == nil) {
+                return
+            }
+
+            galleryType = typeForPath(self.media.path!)
+
+            switch galleryType {
+
+            case "video":
+                if (shouldAllowPlayback) {
+                    player = AVPlayer(URL: self.media)
+                    return
+                }
+
+                image = self.imageThumbnailFromVideo(self.media)
+                break
+
+            case "gif":
+                if (shouldAllowPlayback) {
+                    animatedImage = self.animatedImageFromPath(self.media.path!)
+                    return
+                }
+
+                image = self.imageFromPath(self.media.path!)
+                break
+
+            default:
+                image = self.imageFromPath(self.media.path!)
+
+            }
+        }
+    }
 
     var image: UIImage? {
         set {
@@ -74,46 +111,6 @@ class PRGalleryView: UIView {
     }
 
     ///
-    /// Load any supported media into the gallery view.
-    ///
-    /// - parameter url: The URL to the media being loaded.
-    ///
-    func loadMedia(url: NSURL) {
-        if (url.path == nil) {
-            return
-        }
-
-        media = url
-
-        galleryType = typeForPath(media.path!)
-
-        switch galleryType {
-
-        case "video":
-            if (shouldAllowPlayback) {
-                player = AVPlayer(URL: media)
-                return
-            }
-
-            image = self.imageThumbnailFromVideo(media)
-            break
-
-        case "gif":
-            if (shouldAllowPlayback) {
-                animatedImage = self.animatedImageFromPath(media.path!)
-                return
-            }
-
-            image = self.imageFromPath(media.path!)
-            break
-
-        default:
-            image = self.imageFromPath(media.path!)
-
-        }
-    }
-
-    ///
     /// Determines the type of file being loaded in order to use the appropriate view.
     ///
     /// - parameter path: The path to the file.
@@ -158,7 +155,7 @@ class PRGalleryView: UIView {
         }
 
         if (imageView.animatedImage == nil) {
-            animatedImage = self.animatedImageFromPath(media.path!)
+            animatedImage = self.animatedImageFromPath(media!.path!)
             image = nil
         }
 
