@@ -23,9 +23,13 @@ class PRGalleryView: UIView {
     let imageView: FLAnimatedImageView = FLAnimatedImageView()
     let videoController: AVPlayerViewController = AVPlayerViewController()
 
-    var type: PRGalleryType = .Image
     var shouldAllowPlayback: Bool = true
-    var thumbnailInSeconds: Float64 = 5
+
+    ///
+    // MARK: Generic Media
+    ///
+
+    var type: PRGalleryType = .Image
 
     ///
     /// Load any supported media into the gallery view by URL.
@@ -50,12 +54,12 @@ class PRGalleryView: UIView {
                     return
                 }
 
-                image = imageThumbnailFromVideo(media)
+                image = thumbnailFromVideo(media)
                 break
 
             case .Animated:
                 if (shouldAllowPlayback) {
-                    animatedImage = self.animatedImageFromURL(media)
+                    animatedImage = animatedImageFromURL(media)
                     return
                 }
 
@@ -67,27 +71,6 @@ class PRGalleryView: UIView {
 
             }
         }
-    }
-
-    ///
-    /// Helper function to clean up the view stack after new media is loaded.
-    ///
-    /// - parameter type: The type of loaded media; non-necessary views will be removed.
-    ///
-    func cleanupView(type: PRGalleryType) {
-        if (type == .Video) {
-            videoController.view.frame = bounds
-            imageView.removeFromSuperview()
-            addSubview(videoController.view)
-            return
-        }
-
-        imageView.frame = bounds
-        imageView.autoresizingMask = [.FlexibleHeight, .FlexibleWidth]
-
-        videoController.view.removeFromSuperview()
-        videoController.player = AVPlayer()
-        addSubview(imageView)
     }
 
     ///
@@ -113,6 +96,27 @@ class PRGalleryView: UIView {
     }
 
     ///
+    /// Helper function to clean up the view stack after new media is loaded.
+    ///
+    /// - parameter type: The type of loaded media; non-necessary views will be removed.
+    ///
+    func cleanupView(type: PRGalleryType) {
+        if (type == .Video) {
+            videoController.view.frame = bounds
+            imageView.removeFromSuperview()
+            addSubview(videoController.view)
+            return
+        }
+
+        imageView.frame = bounds
+        imageView.autoresizingMask = [.FlexibleHeight, .FlexibleWidth]
+
+        videoController.view.removeFromSuperview()
+        videoController.player = AVPlayer()
+        addSubview(imageView)
+    }
+
+    ///
     // MARK: Playback
     ///
 
@@ -135,7 +139,7 @@ class PRGalleryView: UIView {
 
         case .Animated:
             if (imageView.animatedImage == nil) {
-                animatedImage = self.animatedImageFromURL(media)
+                animatedImage = animatedImageFromURL(media)
                 image = nil
             }
 
@@ -168,7 +172,7 @@ class PRGalleryView: UIView {
         }
 
         if (type == .Video && !shouldAllowPlayback && videoController.player?.currentItem != nil) {
-            image = imageThumbnailFromVideo(media)
+            image = thumbnailFromVideo(media)
         }
 
         imageView.stopAnimating()
@@ -251,6 +255,8 @@ class PRGalleryView: UIView {
         }
     }
 
+    var thumbnailInSeconds: Float64 = 5
+
 
     ///
     /// Returns a thumbnail image for display when playback is disabled.
@@ -258,7 +264,7 @@ class PRGalleryView: UIView {
     /// - parameter url: The URL of the file.
     /// - returns: `UIImage`
     ///
-    func imageThumbnailFromVideo(url: NSURL) -> UIImage {
+    func thumbnailFromVideo(url: NSURL) -> UIImage {
         let video = AVURLAsset(URL: url)
         let time = CMTimeMakeWithSeconds(thumbnailInSeconds, 60)
         let thumbGenerator = AVAssetImageGenerator(asset: video)
