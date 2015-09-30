@@ -42,6 +42,9 @@ class PRGalleryView: UIView {
             switch type {
 
             case .Video:
+                image = nil
+                animatedImage = nil
+
                 if (shouldAllowPlayback) {
                     player = AVPlayer(URL: self.media)
                     return
@@ -117,7 +120,7 @@ class PRGalleryView: UIView {
     /// Start playback of a video or animated GIF.
     ///
     func play() {
-        if (type != .Video || type != .Animated) {
+        if (type != .Video && type != .Animated) {
             return
         }
 
@@ -147,7 +150,7 @@ class PRGalleryView: UIView {
     /// Pause playback (resumable) of a video or animated GIF.
     ///
     func pause() {
-        if (type != .Video || type != .Animated) {
+        if (type != .Video && type != .Animated) {
             return
         }
 
@@ -160,7 +163,7 @@ class PRGalleryView: UIView {
     /// thumbnail representation if `shouldAllowPlayback` is `false`.
     ///
     func stop() {
-        if (type != .Video || type != .Animated) {
+        if (type != .Video && type != .Animated) {
             return
         }
 
