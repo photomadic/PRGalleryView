@@ -87,6 +87,7 @@ extension UIImage {
         case TopRight = 2
         case Right = 1
         case BottomRight = 0
+        case Detect = -1
     }
 
     ///
@@ -170,7 +171,11 @@ extension UIImage {
     ///
     /// Produces a square-cropped image from the input with cropping gravity.
     ///
-    func square(gravity: UIImageCropGravity) -> UIImage {
+    func square(var gravity: UIImageCropGravity) -> UIImage {
+        if (gravity == .Detect) {
+            gravity = self.gravityFromFaces()
+        }
+
         var dimension: CGFloat = 0
         if (self.size.height > self.size.width) {
             dimension = self.size.width

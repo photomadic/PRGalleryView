@@ -12,6 +12,7 @@
 		8620D1221BB5A5CC00B4C351 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8620D1211BB5A5CC00B4C351 /* ViewController.swift */; };
 		8620D1251BB5A5CC00B4C351 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 8620D1231BB5A5CC00B4C351 /* Main.storyboard */; };
 		8620D1271BB5A5CC00B4C351 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8620D1261BB5A5CC00B4C351 /* Assets.xcassets */; };
+		8686FB0B1BED662C00A78D7B /* PRBrandedImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8686FB0A1BED662C00A78D7B /* PRBrandedImage.swift */; };
 		86BDCC0C1BE7C08300AA7013 /* PRGalleryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 86BDCC0B1BE7C08300AA7013 /* PRGalleryView.swift */; };
 		86BDCC0F1BE7C0DF00AA7013 /* dinosaurs.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 86BDCC0E1BE7C0DF00AA7013 /* dinosaurs.jpg */; };
 		86BDCC111BE7C0E200AA7013 /* rock.gif in Resources */ = {isa = PBXBuildFile; fileRef = 86BDCC101BE7C0E200AA7013 /* rock.gif */; };
@@ -28,6 +29,7 @@
 		8620D1261BB5A5CC00B4C351 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		8620D12B1BB5A5CC00B4C351 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		8620D13B1BB5D04000B4C351 /* Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Bridging-Header.h"; sourceTree = "<group>"; };
+		8686FB0A1BED662C00A78D7B /* PRBrandedImage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = PRBrandedImage.swift; path = ../../PRBrandedImage.swift; sourceTree = "<group>"; };
 		86BDCC0B1BE7C08300AA7013 /* PRGalleryView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = PRGalleryView.swift; path = ../../PRGalleryView.swift; sourceTree = "<group>"; };
 		86BDCC0D1BE7C0DC00AA7013 /* oceans.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; name = oceans.mp4; path = "../Example Media/oceans.mp4"; sourceTree = "<group>"; };
 		86BDCC0E1BE7C0DF00AA7013 /* dinosaurs.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; name = dinosaurs.jpg; path = "../Example Media/dinosaurs.jpg"; sourceTree = "<group>"; };
@@ -80,6 +82,7 @@
 			children = (
 				8620D13B1BB5D04000B4C351 /* Bridging-Header.h */,
 				86BDCC0B1BE7C08300AA7013 /* PRGalleryView.swift */,
+				8686FB0A1BED662C00A78D7B /* PRBrandedImage.swift */,
 				8620D11F1BB5A5CC00B4C351 /* AppDelegate.swift */,
 				8620D1211BB5A5CC00B4C351 /* ViewController.swift */,
 				8620D1231BB5A5CC00B4C351 /* Main.storyboard */,
@@ -231,6 +234,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8686FB0B1BED662C00A78D7B /* PRBrandedImage.swift in Sources */,
 				8620D1221BB5A5CC00B4C351 /* ViewController.swift in Sources */,
 				8620D1201BB5A5CC00B4C351 /* AppDelegate.swift in Sources */,
 				86BDCC0C1BE7C08300AA7013 /* PRGalleryView.swift in Sources */,
