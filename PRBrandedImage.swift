@@ -1,6 +1,6 @@
 //
 //  PRBrandedImage.swift
-//  ⌘ Praxent
+//  Photomadic
 //
 //  Created by Albert Martin on 10/28/15.
 //  Copyright © 2015 Praxent. All rights reserved.
@@ -11,7 +11,7 @@ import CoreImage
 import CoreGraphics
 import Foundation
 
-extension UIImage {
+public extension UIImage {
 
     private func makeContext(size: CGSize, image: CGImageRef) -> CGContextRef {
         var bitmapInfo = CGImageGetBitmapInfo(image).rawValue
@@ -190,6 +190,80 @@ extension UIImage {
         CGContextDrawImage(bitmap, CGRectMake(offset.x, offset.y, self.size.width, self.size.height), imageRef)
 
         return UIImage(CGImage: CGBitmapContextCreateImage(bitmap)!)
+    }
+
+    ///
+    /// Build a square preview grid containing up to four images.
+    ///
+    func previewGrid(images: Array<UIImage>) -> UIImage {
+
+        switch images.count {
+
+        case 0:
+            return UIImage()
+
+        case 1:
+            return images[0].square(.Detect)
+
+        case 2:
+            let left = images[0].square(.Detect)
+            let right = images[1].square(.Detect)
+            let imageWidth = left.size.width / 2
+
+            UIGraphicsBeginImageContextWithOptions(left.size, false, 0.0)
+            left.drawInRect(CGRectMake(0, 0, imageWidth, left.size.height))
+            right.drawInRect(CGRectMake(imageWidth, 0, imageWidth, left.size.height))
+            let twoUp = UIGraphicsGetImageFromCurrentImageContext()
+            UIGraphicsEndImageContext()
+            return twoUp
+
+        default:
+            let topLeft = images[0].square(.Detect)
+            let topRight = images[1].square(.Detect)
+            let bottomLeft = images[2].square(.Detect)
+
+            let quarterSize = topLeft.size.width / 2
+
+            UIGraphicsBeginImageContextWithOptions(topLeft.size, false, 0.0)
+            UIColor.blackColor().set()
+            UIRectFill(CGRectMake(0.0, 0.0, topLeft.size.width, topLeft.size.height));
+            topLeft.drawInRect(CGRectMake(0, 0, quarterSize, quarterSize))
+            topRight.drawInRect(CGRectMake(quarterSize, 0, quarterSize, quarterSize))
+            bottomLeft.drawInRect(CGRectMake(0, quarterSize, quarterSize, quarterSize))
+
+            if images.count == 4 {
+                let bottomRight = images[3].square(.Detect)
+                bottomRight.drawInRect(CGRectMake(quarterSize, quarterSize, quarterSize, quarterSize))
+            }
+
+            if images.count > 4 {
+                let font: UIFont = UIFont.boldSystemFontOfSize(quarterSize / 2)
+                let text: NSString = NSString(format: "+%i", images.count - 3)
+                let attr = [
+                    NSFontAttributeName: font,
+                    NSForegroundColorAttributeName: UIColor.whiteColor()
+                ]
+                let size: CGSize = text.sizeWithAttributes(attr)
+                text.drawAtPoint(CGPointMake(quarterSize + ((quarterSize - size.width) / 2), quarterSize + ((quarterSize - size.height) / 2)), withAttributes: attr)
+            }
+
+            let fourUp = UIGraphicsGetImageFromCurrentImageContext()
+            UIGraphicsEndImageContext()
+            return fourUp
+
+        }
+    }
+
+    ///
+    /// Resize the square image to a particular size.
+    ///
+    func squareWithSize(size: CGFloat) -> UIImage {
+        let square = self.square()
+        UIGraphicsBeginImageContextWithOptions(CGSizeMake(size, size), false, 0.0)
+        square.drawInRect(CGRectMake(0, 0, size, size))
+        let resized = UIGraphicsGetImageFromCurrentImageContext()
+        UIGraphicsEndImageContext()
+        return resized
     }
 
     ///

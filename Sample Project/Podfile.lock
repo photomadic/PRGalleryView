@@ -1,13 +1,22 @@
 PODS:
-  - FLAnimatedImage (1.0.8)
+  - FLAnimatedImage (1.0.10)
+  - PRGalleryView (0.1.0):
+    - FLAnimatedImage (~> 1.0.10)
   - RSPlayPauseButton (1.0.1)
 
 DEPENDENCIES:
-  - FLAnimatedImage
+  - PRGalleryView (from `../`)
   - RSPlayPauseButton
 
+EXTERNAL SOURCES:
+  PRGalleryView:
+    :path: ../
+
 SPEC CHECKSUMS:
-  FLAnimatedImage: f9422f796135aff80d8c00b2afc48015bb746e24
+  FLAnimatedImage: e16a1e1cef08e4c509b47e4acbe3923f65c16135
+  PRGalleryView: a671621fad13baefe9fb1f4767be17255c65c1e5
   RSPlayPauseButton: 9def027a1259ded3a6ecfeb0e57df1775ff22fb0
 
-COCOAPODS: 0.39.0
+PODFILE CHECKSUM: 273d3208dd50e1613a8613c17e2ead4e12628864
+
+COCOAPODS: 1.0.0.beta.2

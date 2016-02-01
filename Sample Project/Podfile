@@ -1,3 +1,7 @@
 platform :ios, '9.0'
-pod 'FLAnimatedImage'
-pod 'RSPlayPauseButton'
+use_frameworks!
+
+target 'PRGalleryViewSample' do
+  pod 'PRGalleryView', :path => '../'
+  pod 'RSPlayPauseButton'
+end

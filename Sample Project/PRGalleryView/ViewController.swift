@@ -7,6 +7,8 @@
 //
 
 import UIKit
+import PRGalleryView
+import RSPlayPauseButton
 
 class ViewController: UIViewController {
 

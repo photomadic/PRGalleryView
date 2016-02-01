@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="9046" systemVersion="15B17c" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="BYZ-38-t0r">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="9531" systemVersion="15D21" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="BYZ-38-t0r">
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="9035"/>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="9529"/>
         <capability name="Aspect ratio constraints" minToolsVersion="5.1"/>
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
     </dependencies>
@@ -9,7 +10,7 @@
         <!--View Controller-->
         <scene sceneID="tne-QT-ifu">
             <objects>
-                <viewController id="BYZ-38-t0r" customClass="ViewController" customModule="PRGalleryView" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController id="BYZ-38-t0r" customClass="ViewController" customModule="PRGalleryViewSample" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="y3c-jy-aDJ"/>
                         <viewControllerLayoutGuide type="bottom" id="wfy-db-euE"/>
@@ -18,9 +19,8 @@
                         <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="0pK-eH-ifC" customClass="PRGalleryView" customModule="PRGalleryView" customModuleProvider="target">
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="0pK-eH-ifC" customClass="PRGalleryView" customModule="PRGalleryView">
                                 <rect key="frame" x="20" y="142" width="560" height="315"/>
-                                <animations/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <constraints>
                                     <constraint firstAttribute="width" secondItem="0pK-eH-ifC" secondAttribute="height" multiplier="16:9" id="Fgn-o6-J65"/>
@@ -28,7 +28,6 @@
                             </view>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="HlS-g9-MAO">
                                 <rect key="frame" x="254" y="465" width="93" height="30"/>
-                                <animations/>
                                 <state key="normal" title="Animated GIF"/>
                                 <connections>
                                     <action selector="loadGif" destination="BYZ-38-t0r" eventType="touchUpInside" id="VMt-yg-7Po"/>
@@ -36,7 +35,6 @@
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Kre-IZ-qVF">
                                 <rect key="frame" x="372" y="465" width="40" height="30"/>
-                                <animations/>
                                 <state key="normal" title="Video"/>
                                 <connections>
                                     <action selector="loadVideo" destination="BYZ-38-t0r" eventType="touchUpInside" id="DKo-UC-hiQ"/>
@@ -44,7 +42,6 @@
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="7uy-Rf-IXO">
                                 <rect key="frame" x="188" y="465" width="41" height="30"/>
-                                <animations/>
                                 <state key="normal" title="Photo"/>
                                 <connections>
                                     <action selector="loadImage" destination="BYZ-38-t0r" eventType="touchUpInside" id="XNU-CX-gc9"/>
@@ -52,7 +49,6 @@
                             </button>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="ql3-BL-BUc" customClass="RSPlayPauseButton">
                                 <rect key="frame" x="275" y="503" width="50" height="50"/>
-                                <animations/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="50" id="4ZF-yo-EBX"/>
@@ -60,7 +56,6 @@
                                 </constraints>
                             </view>
                         </subviews>
-                        <animations/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                         <constraints>
                             <constraint firstItem="HlS-g9-MAO" firstAttribute="leading" secondItem="7uy-Rf-IXO" secondAttribute="trailing" constant="25" id="7Oi-m6-nRS"/>
