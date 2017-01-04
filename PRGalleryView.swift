@@ -14,9 +14,9 @@ import MobileCoreServices
 import FLAnimatedImage
 
 public enum PRGalleryType {
-    case Image
-    case Animated
-    case Video
+    case image
+    case animated
+    case video
 }
 
 public class PRGalleryView: UIView {
@@ -24,7 +24,7 @@ public class PRGalleryView: UIView {
     public let imageView: FLAnimatedImageView = FLAnimatedImageView()
     public let videoController: AVPlayerViewController = AVPlayerViewController()
 
-    public var type: PRGalleryType = .Image
+    public var type: PRGalleryType = .image
     public var shouldAllowPlayback: Bool = true
     public var thumbnailInSeconds: Float64 = 5
 
@@ -35,41 +35,41 @@ public class PRGalleryView: UIView {
     ///
     /// Load any supported media into the gallery view by URL.
     ///
-    public var media: NSURL! {
+    public var media: URL? {
 
         didSet {
-            if (self.media == nil || self.media.path == nil) {
+            if (self.media == nil || self.media!.path == nil) {
                 image = UIImage()
                 return
             }
 
-            type = typeForPath(self.media.path!)
+            type = type(from: self.media!)
 
             switch type {
 
-            case .Video:
+            case .video:
                 image = nil
                 animatedImage = nil
 
                 if (shouldAllowPlayback) {
-                    player = AVPlayer(URL: self.media)
+                    player = AVPlayer(url: self.media!)
                     return
                 }
 
-                image = self.imageThumbnailFromVideo(self.media)
+                image = self.imageThumbnail(from: self.media!)
                 break
 
-            case .Animated:
+            case .animated:
                 if (shouldAllowPlayback) {
-                    animatedImage = self.animatedImageFromPath(self.media.path!)
+                    animatedImage = self.animatedImage(from: self.media!)
                     return
                 }
 
-                image = self.imageFromPath(self.media.path!)
+                image = self.image(from: self.media!.path)
                 break
 
             default:
-                image = self.imageFromPath(self.media.path!)
+                image = self.image(from: self.media!.path)
 
             }
         }
@@ -81,7 +81,7 @@ public class PRGalleryView: UIView {
     /// - parameter type: The type of loaded media; non-necessary views will be removed.
     ///
     public func cleanupView(type: PRGalleryType) {
-        if (type == .Video) {
+        if (type == .video) {
             videoController.view.frame = bounds
             imageView.removeFromSuperview()
             addSubview(videoController.view)
@@ -89,7 +89,7 @@ public class PRGalleryView: UIView {
         }
 
         imageView.frame = bounds
-        imageView.autoresizingMask = [.FlexibleHeight, .FlexibleWidth]
+        imageView.autoresizingMask = [.flexibleHeight, .flexibleWidth]
 
         videoController.view.removeFromSuperview()
         videoController.player = AVPlayer()
@@ -102,20 +102,19 @@ public class PRGalleryView: UIView {
     /// - parameter path: The path to the file.
     /// - returns: `video` for any media requiring playback controls or `gif`/`photo` for images.
     ///
-    public func typeForPath(path: NSString) -> PRGalleryType {
-
-        let utiTag = UTTypeCreatePreferredIdentifierForTag(kUTTagClassFilenameExtension, path.pathExtension, nil)!
+    public func type(from url: URL) -> PRGalleryType {
+        let utiTag = UTTypeCreatePreferredIdentifierForTag(kUTTagClassFilenameExtension, url.pathExtension as CFString, nil)!
         let utiType = utiTag.takeRetainedValue() as String
 
         if (AVURLAsset.audiovisualTypes().contains(String(utiType))) {
-            return .Video
+            return .video
         }
 
         if (String(utiType) == "com.compuserve.gif") {
-            return .Animated
+            return .animated
         }
 
-        return .Image
+        return .image
     }
 
     ///
@@ -123,7 +122,7 @@ public class PRGalleryView: UIView {
     ///
 
     public func sizeOfMedia() -> CGSize {
-        if (type == .Video) {
+        if (type == .video) {
             return videoController.view.frame.size
         }
 
@@ -133,7 +132,7 @@ public class PRGalleryView: UIView {
         } else {
             scale = imageView.frame.size.height / imageView.image!.size.height
         }
-        return CGSizeMake(imageView.image!.size.width * scale, imageView.image!.size.height * scale)
+        return CGSize(width: imageView.image!.size.width * scale, height: imageView.image!.size.height * scale)
     }
 
     ///
@@ -144,22 +143,22 @@ public class PRGalleryView: UIView {
     /// Start playback of a video or animated GIF.
     ///
     public func play() {
-        if (type != .Video && type != .Animated) {
+        if (type != .video && type != .animated) {
             return
         }
 
         switch type {
 
-        case .Video:
+        case .video:
             if (imageView.image != nil) {
-                player = AVPlayer(URL: self.media)
+                player = AVPlayer(url: self.media!)
             }
 
             player!.play()
 
-        case .Animated:
+        case .animated:
             if (imageView.animatedImage == nil) {
-                animatedImage = self.animatedImageFromPath(media!.path!)
+                animatedImage = self.animatedImage(from: media!)
                 image = nil
             }
 
@@ -174,7 +173,7 @@ public class PRGalleryView: UIView {
     /// Pause playback (resumable) of a video or animated GIF.
     ///
     public func pause() {
-        if (type != .Video && type != .Animated) {
+        if (type != .video && type != .animated) {
             return
         }
 
@@ -187,12 +186,12 @@ public class PRGalleryView: UIView {
     /// thumbnail representation if `shouldAllowPlayback` is `false`.
     ///
     public func stop() {
-        if (type != .Video && type != .Animated) {
+        if (type != .video && type != .animated) {
             return
         }
 
-        if (type == .Video && !shouldAllowPlayback && videoController.player?.currentItem != nil) {
-            image = self.imageThumbnailFromVideo(self.media)
+        if (type == .video && !shouldAllowPlayback && videoController.player?.currentItem != nil) {
+            image = self.imageThumbnail(from: self.media!)
         }
 
         imageView.stopAnimating()
@@ -206,7 +205,7 @@ public class PRGalleryView: UIView {
     public var animatedImage: FLAnimatedImage? {
         set {
             imageView.animatedImage = newValue
-            cleanupView(.Image)
+            cleanupView(type: .image)
         }
         get {
             return imageView.animatedImage
@@ -219,15 +218,14 @@ public class PRGalleryView: UIView {
     /// - parameter path: The path to the file.
     /// - returns: `FLAnimatedImage`
     ///
-    public func animatedImageFromPath(path: String) -> FLAnimatedImage {
-        let image = FLAnimatedImage(animatedGIFData: NSData(contentsOfFile: path))
-
-        if (image == nil) {
-            print("Unable to create animated image from path", path)
+    public func animatedImage(from url: URL) -> FLAnimatedImage {
+        do {
+            let image = try FLAnimatedImage(animatedGIFData: Data(contentsOf: url))
+            return image!
+        } catch {
+            print("Unable to create animated image from URL", url)
             return FLAnimatedImage()
         }
-
-        return image!
     }
 
     ///
@@ -237,7 +235,7 @@ public class PRGalleryView: UIView {
     public var image: UIImage? {
         set {
             imageView.image = newValue
-            cleanupView(.Image)
+            cleanupView(type: .image)
         }
         get {
             return imageView.image
@@ -250,7 +248,7 @@ public class PRGalleryView: UIView {
     /// - parameter path: The path to the file.
     /// - returns: `UIImage`
     ///
-    public func imageFromPath(path: String) -> UIImage {
+    public func image(from path: String) -> UIImage {
         let image = UIImage(contentsOfFile: path)
 
         if (image == nil) {
@@ -259,7 +257,7 @@ public class PRGalleryView: UIView {
         }
 
         if (branded) {
-            return image!.branded(overlayLandscape, portrait: overlayPortrait)
+            return image!.branded(landscape: overlayLandscape, portrait: overlayPortrait)
         }
 
         return image!
@@ -272,7 +270,7 @@ public class PRGalleryView: UIView {
     public var player: AVPlayer? {
         set {
             videoController.player = newValue
-            cleanupView(.Video)
+            cleanupView(type: .video)
         }
         get {
             return videoController.player
@@ -286,15 +284,15 @@ public class PRGalleryView: UIView {
     /// - parameter url: The URL of the file.
     /// - returns: `UIImage`
     ///
-    public func imageThumbnailFromVideo(url: NSURL) -> UIImage {
-        let video = AVURLAsset(URL: url)
+    public func imageThumbnail(from url: URL) -> UIImage {
+        let video = AVURLAsset(url: url)
         let time = CMTimeMakeWithSeconds(thumbnailInSeconds, 60)
         let thumbGenerator = AVAssetImageGenerator(asset: video)
         thumbGenerator.appliesPreferredTrackTransform = true
 
         do {
-            let thumbnail = try thumbGenerator.copyCGImageAtTime(time, actualTime: nil)
-            return UIImage(CGImage: thumbnail)
+            let thumbnail = try thumbGenerator.copyCGImage(at: time, actualTime: nil)
+            return UIImage(cgImage: thumbnail)
         } catch {
             print("Unable to generate thumbnail from video", url.path)
             return UIImage()

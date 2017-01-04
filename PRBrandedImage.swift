@@ -13,28 +13,28 @@ import Foundation
 
 public extension UIImage {
 
-    private func makeContext(size: CGSize, image: CGImageRef) -> CGContextRef {
-        var bitmapInfo = CGImageGetBitmapInfo(image).rawValue
+    private func makeContext(size: CGSize, image: CGImage) -> CGContext {
+        var bitmapInfo = image.bitmapInfo.rawValue
         if (bitmapInfo == 3) {
-            bitmapInfo = CGImageAlphaInfo.PremultipliedLast.rawValue
+            bitmapInfo = CGImageAlphaInfo.premultipliedLast.rawValue
         }
 
-        return CGBitmapContextCreate(
-            nil,
-            Int(size.width),
-            Int(size.height),
-            CGImageGetBitsPerComponent(image),
-            0,
-            CGImageGetColorSpace(image),
-            bitmapInfo
-            )!
+        return CGContext(
+            data: nil,
+            width: Int(size.width),
+            height: Int(size.height),
+            bitsPerComponent: image.bitsPerComponent,
+            bytesPerRow: 0,
+            space: image.colorSpace!,
+            bitmapInfo: bitmapInfo
+        )!
     }
 
     ///
     /// Calculate the drawing offset based on target dimensions.
     ///
     private func drawingOffset(size: CGSize, dimension: CGFloat) -> CGPoint {
-        return self.drawingOffset(size, dimension: dimension, gravity: .Center)
+        return self.drawingOffset(size: size, dimension: dimension, gravity: .center)
     }
 
     ///
@@ -47,59 +47,59 @@ public extension UIImage {
 
         switch (gravity) {
 
-        case .Left:
-            return CGPointMake(0, centerY)
+        case .left:
+            return CGPoint(x: 0, y: centerY)
 
-        case .Right:
-            return CGPointMake(0 - (size.width - dimension), centerY)
+        case .right:
+            return CGPoint(x: 0 - (size.width - dimension), y: centerY)
 
-        case .TopLeft:
-            return CGPointMake(0, 0 - (size.height - dimension))
+        case .topLeft:
+            return CGPoint(x: 0, y: 0 - (size.height - dimension))
 
-        case .Top:
-            return CGPointMake(centerX, 0 - (size.height - dimension))
+        case .top:
+            return CGPoint(x: centerX, y: 0 - (size.height - dimension))
 
-        case .TopRight:
-            return CGPointMake(0 - (size.width - dimension), 0 - (size.height - dimension))
+        case .topRight:
+            return CGPoint(x: 0 - (size.width - dimension), y: 0 - (size.height - dimension))
 
-        case .BottomLeft:
-            return CGPointMake(0, 0)
+        case .bottomLeft:
+            return .zero
 
-        case .Bottom:
-            return CGPointMake(centerX, 0)
+        case .bottom:
+            return CGPoint(x: centerX, y: 0)
 
-        case .BottomRight:
-            return CGPointMake(0 - (size.width - dimension), 0)
+        case .bottomRight:
+            return CGPoint(x: 0 - (size.width - dimension), y: 0)
 
         default: // Center
-            return CGPointMake(centerX, centerY)
+            return CGPoint(x: centerX, y: centerY)
 
         }
     }
 
     enum UIImageCropGravity: Int {
-        case TopLeft = 8
-        case Left = 7
-        case BottomLeft = 6
-        case Top = 5
-        case Center = 4
-        case Bottom = 3
-        case TopRight = 2
-        case Right = 1
-        case BottomRight = 0
-        case Detect = -1
+        case topLeft = 8
+        case left = 7
+        case bottomLeft = 6
+        case top = 5
+        case center = 4
+        case bottom = 3
+        case topRight = 2
+        case right = 1
+        case bottomRight = 0
+        case detect = -1
     }
 
     ///
     /// Get all faces contained in an image.
     ///
     private func allFaces() -> [CIFeature] {
-        let image = CoreImage.CIImage(CGImage: self.CGImage!)
+        let image = CoreImage.CIImage(cgImage: self.cgImage!)
 
         let options = [CIDetectorAccuracy: CIDetectorAccuracyLow]
         let faceDetector = CIDetector(ofType: CIDetectorTypeFace, context: nil, options: options)
 
-        return faceDetector.featuresInImage(image)
+        return faceDetector!.features(in: image)
     }
 
     ///
@@ -124,15 +124,15 @@ public extension UIImage {
     /// Determine a cropping gravity based on the first face detected.
     ///
     func gravityFromFaces() -> UIImageCropGravity {
-        let imageRect = CGRectMake(0, 0, self.size.width, self.size.height)
+        let imageRect = CGRect(origin: .zero, size: CGSize(width: self.size.width, height: self.size.height))
         let faces = self.allFaces()
 
         // If no faces are found, crop to center.
         if (faces.first == nil) {
-            return .Center
+            return .center
         }
 
-        let primaryFace = self.primaryFace(faces)
+        let primaryFace = self.primaryFace(faces: faces)
         primaryFace.bounds.origin
 
         var columns: [CGRect] = []
@@ -142,7 +142,7 @@ public extension UIImage {
 
         // First we slice the image into three equal columns.
         repeat {
-            let (slice, remainder) = remaining.divide(self.size.width / 3, fromEdge: .MinXEdge)
+            let (slice, remainder) = remaining.divided(atDistance: self.size.width / 3, from: .minXEdge)
             columns.append(slice)
             remaining = remainder
         } while (remaining.width > 0)
@@ -151,7 +151,7 @@ public extension UIImage {
         for index in 0...2 {
             var remaining: CGRect = columns[index]
             repeat {
-                let (slice, remainder) = remaining.divide(self.size.height / 3, fromEdge: .MinYEdge)
+                let (slice, remainder) = remaining.divided(atDistance: self.size.height / 3, from: .minYEdge)
                 sectors.append(slice)
                 remaining = remainder
             } while (remaining.height > 0)
@@ -165,14 +165,15 @@ public extension UIImage {
         }
 
         // Fall back to Center in case of strangeness.
-        return .Center
+        return .center
     }
 
     ///
     /// Produces a square-cropped image from the input with cropping gravity.
     ///
-    func square(var gravity: UIImageCropGravity) -> UIImage {
-        if (gravity == .Detect) {
+    func square(gravity: UIImageCropGravity) -> UIImage {
+        var gravity = gravity
+        if (gravity == .detect) {
             gravity = self.gravityFromFaces()
         }
 
@@ -183,13 +184,13 @@ public extension UIImage {
             dimension = self.size.height
         }
 
-        let imageRef = self.CGImage!
-        let bitmap: CGContextRef = makeContext(CGSizeMake(dimension, dimension), image: imageRef)
+        let imageRef = self.cgImage!
+        let bitmap: CGContext = makeContext(size: CGSize(width: dimension, height: dimension), image: imageRef)
 
-        let offset: CGPoint = drawingOffset(self.size, dimension: dimension, gravity: gravity)
-        CGContextDrawImage(bitmap, CGRectMake(offset.x, offset.y, self.size.width, self.size.height), imageRef)
+        let offset: CGPoint = drawingOffset(size: self.size, dimension: dimension, gravity: gravity)
+        bitmap.draw(imageRef, in: CGRect(x: offset.x, y: offset.y, width: self.size.width, height: self.size.height))
 
-        return UIImage(CGImage: CGBitmapContextCreateImage(bitmap)!)
+        return UIImage(cgImage: bitmap.makeImage()!)
     }
 
     ///
@@ -203,53 +204,53 @@ public extension UIImage {
             return UIImage()
 
         case 1:
-            return images[0].square(.Detect)
+            return images[0].square(gravity: .detect)
 
         case 2:
-            let left = images[0].square(.Detect)
-            let right = images[1].square(.Detect)
+            let left = images[0].square(gravity: .detect)
+            let right = images[1].square(gravity: .detect)
             let imageWidth = left.size.width / 2
 
             UIGraphicsBeginImageContextWithOptions(left.size, false, 0.0)
-            left.drawInRect(CGRectMake(0, 0, imageWidth, left.size.height))
-            right.drawInRect(CGRectMake(imageWidth, 0, imageWidth, left.size.height))
+            left.draw(in: CGRect(origin: .zero, size: CGSize(width: imageWidth, height: left.size.height)))
+            right.draw(in: CGRect(x: imageWidth, y: 0, width: imageWidth, height: left.size.height))
             let twoUp = UIGraphicsGetImageFromCurrentImageContext()
             UIGraphicsEndImageContext()
-            return twoUp
+            return twoUp!
 
         default:
-            let topLeft = images[0].square(.Detect)
-            let topRight = images[1].square(.Detect)
-            let bottomLeft = images[2].square(.Detect)
+            let topLeft = images[0].square(gravity: .detect)
+            let topRight = images[1].square(gravity: .detect)
+            let bottomLeft = images[2].square(gravity: .detect)
 
             let quarterSize = topLeft.size.width / 2
 
             UIGraphicsBeginImageContextWithOptions(topLeft.size, false, 0.0)
-            UIColor.blackColor().set()
-            UIRectFill(CGRectMake(0.0, 0.0, topLeft.size.width, topLeft.size.height));
-            topLeft.drawInRect(CGRectMake(0, 0, quarterSize, quarterSize))
-            topRight.drawInRect(CGRectMake(quarterSize, 0, quarterSize, quarterSize))
-            bottomLeft.drawInRect(CGRectMake(0, quarterSize, quarterSize, quarterSize))
+            UIColor.black.set()
+            UIRectFill(CGRect(origin: .zero, size: topLeft.size));
+            topLeft.draw(in: CGRect(origin: .zero, size: CGSize(width: quarterSize, height: quarterSize)))
+            topRight.draw(in: CGRect(x: quarterSize, y: 0, width: quarterSize, height: quarterSize))
+            bottomLeft.draw(in: CGRect(x: 0, y: quarterSize, width: quarterSize, height: quarterSize))
 
             if images.count == 4 {
-                let bottomRight = images[3].square(.Detect)
-                bottomRight.drawInRect(CGRectMake(quarterSize, quarterSize, quarterSize, quarterSize))
+                let bottomRight = images[3].square(gravity: .detect)
+                bottomRight.draw(in: CGRect(x: quarterSize, y: quarterSize, width: quarterSize, height: quarterSize))
             }
 
             if images.count > 4 {
-                let font: UIFont = UIFont.boldSystemFontOfSize(quarterSize / 2)
+                let font: UIFont = UIFont.boldSystemFont(ofSize: quarterSize / 2)
                 let text: NSString = NSString(format: "+%i", images.count - 3)
                 let attr = [
                     NSFontAttributeName: font,
-                    NSForegroundColorAttributeName: UIColor.whiteColor()
+                    NSForegroundColorAttributeName: UIColor.white
                 ]
-                let size: CGSize = text.sizeWithAttributes(attr)
-                text.drawAtPoint(CGPointMake(quarterSize + ((quarterSize - size.width) / 2), quarterSize + ((quarterSize - size.height) / 2)), withAttributes: attr)
+                let size: CGSize = text.size(attributes: attr)
+                text.draw(at: CGPoint(x: quarterSize + ((quarterSize - size.width) / 2), y: quarterSize + ((quarterSize - size.height) / 2)), withAttributes: attr)
             }
 
             let fourUp = UIGraphicsGetImageFromCurrentImageContext()
             UIGraphicsEndImageContext()
-            return fourUp
+            return fourUp!
 
         }
     }
@@ -259,18 +260,18 @@ public extension UIImage {
     ///
     func squareWithSize(size: CGFloat) -> UIImage {
         let square = self.square()
-        UIGraphicsBeginImageContextWithOptions(CGSizeMake(size, size), false, 0.0)
-        square.drawInRect(CGRectMake(0, 0, size, size))
+        UIGraphicsBeginImageContextWithOptions(CGSize(width: size, height: size), false, 0.0)
+        square.draw(in: CGRect(origin: .zero, size: CGSize(width: size, height: size)))
         let resized = UIGraphicsGetImageFromCurrentImageContext()
         UIGraphicsEndImageContext()
-        return resized
+        return resized!
     }
 
     ///
     /// Produces a simple square-cropped image from the input.
     ///
     func square() -> UIImage {
-        return self.square(.Center)
+        return self.square(gravity: .center)
     }
 
     ///
@@ -284,16 +285,16 @@ public extension UIImage {
             dimension = self.size.width
         }
 
-        let imageRef = self.CGImage!
-        let bitmap: CGContextRef = makeContext(CGSizeMake(dimension, dimension), image: imageRef)
+        let imageRef = self.cgImage!
+        let bitmap: CGContext = makeContext(size: CGSize(width: dimension, height: dimension), image: imageRef)
 
-        CGContextSetFillColorWithColor(bitmap, matteColor.CGColor)
-        CGContextFillRect(bitmap, CGRectMake(0.0, 0.0, dimension, dimension));
+        bitmap.setFillColor(matteColor.cgColor)
+        bitmap.fill(CGRect(origin: .zero, size: CGSize(width: dimension, height: dimension)));
 
-        let offset: CGPoint = drawingOffset(self.size, dimension: dimension)
-        CGContextDrawImage(bitmap, CGRectMake(offset.x, offset.y, self.size.width, self.size.height), imageRef)
+        let offset: CGPoint = drawingOffset(size: self.size, dimension: dimension)
+        bitmap.draw(imageRef, in: CGRect(origin: offset, size: self.size))
 
-        return UIImage(CGImage: CGBitmapContextCreateImage(bitmap)!)
+        return UIImage(cgImage: bitmap.makeImage()!)
     }
 
     ///
@@ -301,17 +302,19 @@ public extension UIImage {
     ///
     func branded(overlay: UIImage) -> UIImage {
 
-        if (overlay.size == CGSizeZero) {
+        if (overlay.size == .zero) {
             return self
         }
 
-        let imageRef = self.CGImage!
-        let bitmap: CGContextRef = makeContext(self.size, image: imageRef)
+        let imageRef = self.cgImage!
+        let bitmap: CGContext = makeContext(size: self.size, image: imageRef)
 
-        CGContextDrawImage(bitmap, CGRectMake(0, 0, self.size.width, self.size.height), imageRef)
-        CGContextDrawImage(bitmap, CGRectMake(0, 0, self.size.width, self.size.height), overlay.CGImage)
+        let drawRect = CGRect(origin: .zero, size: self.size)
 
-        return UIImage(CGImage: CGBitmapContextCreateImage(bitmap)!)
+        bitmap.draw(imageRef, in: drawRect)
+        bitmap.draw(overlay.cgImage!, in: drawRect)
+
+        return UIImage(cgImage: bitmap.makeImage()!)
     }
 
     ///
@@ -320,10 +323,10 @@ public extension UIImage {
     func branded(landscape: UIImage, portrait: UIImage) -> UIImage {
 
         if (self.size.width > self.size.height) {
-            return self.branded(landscape)
+            return self.branded(overlay: landscape)
         }
 
-        return self.branded(portrait)
+        return self.branded(overlay: portrait)
     }
 
 }

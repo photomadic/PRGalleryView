@@ -18,30 +18,30 @@ class ViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        galleryView.imageView.contentMode = .ScaleAspectFill
+        galleryView.imageView.contentMode = .scaleAspectFill
         galleryView.imageView.clipsToBounds = true
 
-        playPause.addTarget(self, action: "togglePlayback:", forControlEvents: .TouchUpInside)
+        playPause.addTarget(self, action: #selector(ViewController.togglePlayback(_:)), for: .touchUpInside)
 
         self.loadGif()
     }
 
     @IBAction func loadImage() {
-        let image = NSBundle.mainBundle().URLForResource("dinosaurs", withExtension: "jpg")!
+        let image = Bundle.main.url(forResource: "dinosaurs", withExtension: "jpg")!
         galleryView.media = image
 
         showPlaybackButton()
     }
 
     @IBAction func loadGif() {
-        let gif = NSBundle.mainBundle().URLForResource("rock", withExtension: "gif")!
+        let gif = Bundle.main.url(forResource: "rock", withExtension: "gif")!
         galleryView.media = gif
 
         showPlaybackButton()
     }
 
     @IBAction func loadVideo() {
-        let video = NSBundle.mainBundle().URLForResource("oceans", withExtension: "mp4")!
+        let video = Bundle.main.url(forResource: "oceans", withExtension: "mp4")!
         galleryView.media = video
         galleryView.videoController.player?.play()
 
@@ -49,18 +49,18 @@ class ViewController: UIViewController {
     }
 
     func showPlaybackButton() {
-        playPause.alpha = CGFloat(galleryView.type == .Video || galleryView.type == .Animated)
-        playPause.paused = false
+        playPause.alpha = CGFloat(NSNumber(value: galleryView.type == .video || galleryView.type == .animated))
+        playPause.isPaused = false
     }
 
-    func togglePlayback(playPauseButton: RSPlayPauseButton) {
-        if (playPause.paused) {
+    func togglePlayback(_ playPauseButton: RSPlayPauseButton) {
+        if (playPause.isPaused) {
             galleryView.play()
         } else {
             galleryView.pause()
         }
 
-        playPause.setPaused(!playPause.paused, animated: true)
+        playPause.setPaused(!playPause.isPaused, animated: true)
     }
 
 }
